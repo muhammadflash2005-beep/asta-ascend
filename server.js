@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { URL } = require('url');
-const ROOT = __dirname, PUB = path.join(ROOT,'public'), DBFILE = path.join(ROOT,'data.json');
+const ROOT = __dirname, PUB = ROOT, DBFILE = path.join(ROOT,'data.json');
 const PORT = process.env.PORT || 3000;
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
 const ORIGIN = process.env.APP_URL || '';
