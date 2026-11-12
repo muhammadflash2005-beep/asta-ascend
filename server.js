@@ -761,7 +761,16 @@ const server = http.createServer(async (req, res) => {
     } catch {
       return json(res, 400, { error: 'Invalid URL.' });
     }
-
+    if (
+      requestedPath === '/server.js' ||
+      requestedPath === '/data.json' ||
+      /^\/(package(-lock)?\.json|npm-shrinkwrap\.json|yarn\.lock)$/i.test(requestedPath) ||
+      requestedPath.split('/').some(part =>
+        part.startsWith('.') || part === 'node_modules'
+      )
+    ) {
+      return json(res, 403, { error: 'Forbidden.' });
+    }
     const file = path.resolve(
       PUB,
       '.' + (requestedPath === '/' ? '/index.html' : requestedPath)
