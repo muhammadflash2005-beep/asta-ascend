@@ -819,11 +819,13 @@ const server = http.createServer(async (req, res) => {
     }
 
     res.writeHead(200, {
-      'Content-Type': mime[path.extname(target).toLowerCase()] ||
-        'application/octet-stream',
-      'X-Content-Type-Options': 'nosniff'
-    });
-
+  'Content-Type': mime[path.extname(target).toLowerCase()] ||
+    'application/octet-stream',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+});
     fs.createReadStream(target).pipe(res);
   } catch (err) {
     console.error('Server request failed:', err.message);
