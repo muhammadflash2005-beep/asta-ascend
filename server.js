@@ -318,7 +318,7 @@ async function api(req, res, url) {
 
       if (Array.isArray(b.focus) && b.focus.length) {
         sets.push(`focus = $${n++}`);
-        values.push(b.focus.map(x => safeText(x, 40)).filter(Boolean).slice(0, 12));
+        values.push(JSON.stringify(b.focus.map(x => safeText(x, 40)).filter(Boolean).slice(0, 12)));
 
         sets.push(`level_choice = $${n++}`);
         values.push(safeText(b.levelChoice || 'Beginner', 30));
