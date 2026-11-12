@@ -3,10 +3,21 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { URL } = require('url');
+const { Pool } = require('pg');
+
 const ROOT = __dirname, PUB = ROOT, DBFILE = path.join(ROOT,'data.json');
 const PORT = process.env.PORT || 3000;
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
 const ORIGIN = process.env.APP_URL || '';
+const DATABASE_URL = process.env.DATABASE_URL || '';
+const pool = DATABASE_URL ? new Pool({
+  connectionString: DATABASE_URL,
+  max: 3,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+  keepAlive: true
+}) : null;
+
 let db = {users:{}, sessions:{}, payments:{}};
 try { db = {...db, ...JSON.parse(fs.readFileSync(DBFILE,'utf8'))}; } catch {}
 function save(){ fs.writeFileSync(DBFILE, JSON.stringify(db,null,2)); }
@@ -22,7 +33,24 @@ function xpForNext(level){return 100+(level*35);}
 function safeText(s,max=80){return String(s||'').trim().slice(0,max);}
 async function api(req,res,url){
  const p=url.pathname;
- if(p==='/api/health') return json(res,200,{ok:true,app:'ASTA Ascend',payments:!!PAYSTACK_SECRET});
+ if(p==='/api/health'){
+  let databaseStatus = 'not_configured';
+  if(pool){
+   try {
+    await pool.query('SELECT 1');
+    databaseStatus = 'connected';
+   } catch {
+    databaseStatus = 'unavailable';
+   }
+  }
+  const healthy = databaseStatus === 'connected';
+  return json(res,healthy?200:503,{
+   ok:healthy,
+   app:'ASTA Ascend',
+   payments:!!PAYSTACK_SECRET,
+   database:{status:databaseStatus}
+  });
+ }
  if(p==='/api/register'&&req.method==='POST'){
   const b=await body(req), email=safeText(b.email,160).toLowerCase(), name=safeText(b.name,50), password=String(b.password||'');
   if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8||!name) return json(res,400,{error:'Enter a valid email, name and password of at least 8 characters.'});
