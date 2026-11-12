@@ -196,9 +196,9 @@ async function api(req, res, url) {
       client = await pool.connect();
       await client.query('BEGIN');
 
-      const inserted = await client.query(
-        INSERT INTO app_users (id, email, name, salt, password_hash)
-         VALUES ($1, $2, $3, $4)
+            const inserted = await client.query(
+        `INSERT INTO app_users (id, email, name, salt, password_hash)
+         VALUES ($1, $2, $3, $4, $5)
          RETURNING *`,
         [crypto.randomUUID(), email, name, salt, passwordHash]
       );
