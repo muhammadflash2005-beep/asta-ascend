@@ -44,8 +44,12 @@ function json(res, code, data) {
   res.writeHead(code, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
-    'X-Content-Type-Options': 'nosniff'
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin'
   });
+  res.end(JSON.stringify(data));
+}
   res.end(JSON.stringify(data));
 }
 
