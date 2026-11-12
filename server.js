@@ -39,9 +39,10 @@ async function api(req,res,url){
    try {
     await pool.query('SELECT 1');
     databaseStatus = 'connected';
-   } catch {
-    databaseStatus = 'unavailable';
-   }
+   } catch (e) {
+  console.error('Neon database check failed:', e.message);
+  databaseStatus = 'unavailable';
+}
   }
   const healthy = databaseStatus === 'connected';
   return json(res,healthy?200:503,{
