@@ -50,8 +50,6 @@ function json(res, code, data) {
   });
   res.end(JSON.stringify(data));
 }
-  res.end(JSON.stringify(data));
-}
 
 function cookie(res, token) {
   res.setHeader(
