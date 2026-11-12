@@ -242,6 +242,15 @@ async function api(req, res, url) {
   }
 
   if (p === '/api/login' && req.method === 'POST') {
+        const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+      || req.socket.remoteAddress
+      || 'unknown';
+
+    if (!checkLoginLimit(ip)) {
+      return json(res, 429, {
+        error: 'Too many login attempts. Please try again in 15 minutes.'
+      });
+    }
     try {
       const b = await body(req);
       const email = safeText(b.email, 160).toLowerCase();
@@ -264,7 +273,7 @@ async function api(req, res, url) {
           !crypto.timingSafeEqual(storedHash, suppliedHash)) {
         return json(res, 401, { error: 'Invalid email or password.' });
       }
-
+      loginAttempts.delete(ip);
       await createSession(user.id, res);
       return json(res, 200, { user: publicUser(user) });
     } catch (err) {
