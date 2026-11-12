@@ -1,0 +1,8 @@
+{
+  "name": "asta-ascend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ASTA Ascend - System-style home workout RPG",
+  "scripts": {"start": "node server.js", "dev": "node server.js"},
+  "engines": {"node": ">=20"}
+}
