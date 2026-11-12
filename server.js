@@ -52,13 +52,15 @@ function json(res, code, data) {
 function cookie(res, token) {
   res.setHeader(
     'Set-Cookie',
-    `asta_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=2592000${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`
+    `asta_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=2592000`
   );
 }
 
 function clearCookie(res) {
-  res.setHeader('Set-Cookie', 'asta_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0' +
-    (process.env.NODE_ENV === 'production' ? '; Secure' : ''));
+  res.setHeader(
+    'Set-Cookie',
+    'asta_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0'
+  );
 }
 
 function getToken(req) {
