@@ -26,7 +26,20 @@ const pool = new Pool({
 });
 
 pool.on('error', err => console.error('Unexpected Neon pool error:', err.message));
+const loginAttempts = new Map();
 
+function checkLoginLimit(ip) {
+  const now = Date.now();
+  const entry = loginAttempts.get(ip);
+
+  if (!entry || now - entry.start >= 15 * 60 * 1000) {
+    loginAttempts.set(ip, { start: now, count: 1 });
+    return true;
+  }
+
+  entry.count++;
+  return entry.count <= 5;
+}
 function json(res, code, data) {
   res.writeHead(code, {
     'Content-Type': 'application/json; charset=utf-8',
