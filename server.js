@@ -197,10 +197,10 @@ async function api(req, res, url) {
       await client.query('BEGIN');
 
       const inserted = await client.query(
-        `INSERT INTO app_users (email, name, salt, password_hash)
+        INSERT INTO app_users (id, email, name, salt, password_hash)
          VALUES ($1, $2, $3, $4)
          RETURNING *`,
-        [email, name, salt, passwordHash]
+        [crypto.randomUUID(), email, name, salt, passwordHash]
       );
 
       const user = inserted.rows[0];
