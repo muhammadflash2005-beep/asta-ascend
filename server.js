@@ -823,7 +823,8 @@ const server = http.createServer(async (req, res) => {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+'Strict-Transport-Security': 'max-age=31536000',
+'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
 });
     fs.createReadStream(target).pipe(res);
   } catch (err) {
