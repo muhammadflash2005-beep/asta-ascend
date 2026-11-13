@@ -97,6 +97,4 @@ function mount(el,exercise){
 }
 window.ASTAWorkout3D={mount,unmount,exerciseNames:names.slice()};
 })();
-window.ASTAWorkout3D={mount,unmount,exerciseNames:names.slice()};
-})();
                                
