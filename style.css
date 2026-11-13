@@ -35,3 +35,52 @@
   font-size: 10px;
   letter-spacing: 2px;
 }
+/* ASTA ASCEND EXERCISE LIBRARY 3D DEMO */
+
+.exercise-demo-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 9px;
+  flex-wrap: wrap;
+}
+
+.exercise-demo {
+  height: 360px;
+  max-height: 360px;
+  min-height: 320px;
+  border: 1px solid #792037;
+  border-radius: 13px;
+  overflow: hidden;
+  background: #08080b;
+  position: relative;
+}
+
+.exercise-demo .asta-3d-stage {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+}
+
+.exercise-demo canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.exercise-demo .asta-3d-label {
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+@media (max-width: 480px) {
+  .exercise-demo {
+    height: 320px;
+    min-height: 300px;
+  }
+
+  .exercise-demo .asta-3d-stage {
+    min-height: 300px;
+  }
+}
