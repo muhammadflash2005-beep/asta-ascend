@@ -47,6 +47,7 @@ function json(res, code, data) {
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'strict-origin-when-cross-origin'
+    'Strict-Transport-Security': 'max-age=31536000'
   });
   res.end(JSON.stringify(data));
 }
