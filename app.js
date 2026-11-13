@@ -60,3 +60,31 @@ let mode='login';function authMode(m){mode=m;$('#namefield').classList.toggle('h
 async function loadMe(user){state.user=user;let d=await api('/me');state.me=d;state.user=d.user;state.logs=d.logs||[];state.schedule=d.schedule||{};state.favorites=d.favorites||[];state.page='home';render();if(d.reminders?.time)scheduleReminder(d.reminders.time);}
 async function init(){if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});try{let d=await api('/me');await loadMe(d.user);const ref=new URLSearchParams(location.search).get('reference');if(ref){try{let paid=await api('/payments/verify',{method:'POST',body:JSON.stringify({reference:ref})});state.user=paid.user;toast('[SYSTEM] Payment verified · Coins credited');history.replaceState({},'', '/');render();}catch(e){toast(e.message);}}}catch{auth();}}
 init();
+function workoutVoices(){
+  return window.speechSynthesis
+    ? window.speechSynthesis.getVoices()
+    : [];
+}
+
+function prestart(){
+  const voices=workoutVoices();
+  const selected=localStorage.getItem('astaWorkoutVoice')||'default';
+
+  return `<section class="panel">
+    <div class="eyebrow">[ WORKOUT PREPARATION ]</div>
+    <h1 class="h1">GET READY, PLAYER.</h1>
+    <p class="muted">Your workout begins with a 5-second countdown.</p>
+
+    <div class="field">
+      <label>COUNTDOWN VOICE</label>
+      <select id="workoutVoice" onchange="localStorage.setItem('astaWorkoutVoice',this.value)">
+        <option value="default" ${selected==='default'?'selected':''}>Device default voice</option>
+        <option value="off" ${selected==='off'?'selected':''}>Voice off · Screen only</option>
+        ${voices.map(v=>`<option value="${esc(v.voiceURI)}" ${selected===v.voiceURI?'selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}
+      </select>
+    </div>
+
+    <button class="btn" onclick="beginWorkoutCountdown()">START COUNTDOWN</button>
+    <button class="btn secondary" onclick="state.page='home';render()">CANCEL</button>
+  </section>`;
+}
