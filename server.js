@@ -27,7 +27,20 @@ const pool = new Pool({
 
 pool.on('error', err => console.error('Unexpected Neon pool error:', err.message));
 const loginAttempts = new Map();
+const registerAttempts = new Map();
 
+function checkRegisterLimit(ip) {
+  const now = Date.now();
+  const entry = registerAttempts.get(ip);
+
+  if (!entry || now - entry.start >= 60 * 60 * 1000) {
+    registerAttempts.set(ip, { start: now, count: 1 });
+    return true;
+  }
+
+  entry.count++;
+  return entry.count <= 5;
+}
 function checkLoginLimit(ip) {
   const now = Date.now();
   const entry = loginAttempts.get(ip);
