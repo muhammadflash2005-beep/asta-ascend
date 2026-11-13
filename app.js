@@ -88,3 +88,20 @@ function prestart(){
     <button class="btn secondary" onclick="state.page='home';render()">CANCEL</button>
   </section>`;
 }
+function speakWorkout(value){
+  if(!window.speechSynthesis)return;
+
+  const choice=localStorage.getItem('astaWorkoutVoice')||'default';
+  if(choice==='off')return;
+
+  const voices=workoutVoices();
+  const speech=new SpeechSynthesisUtterance(String(value));
+
+  if(choice!=='default'){
+    speech.voice=voices.find(v=>v.voiceURI===choice)||null;
+  }
+
+  speech.rate=0.9;
+  speech.pitch=1;
+  window.speechSynthesis.speak(speech);
+}
