@@ -210,6 +210,15 @@ async function api(req, res, url) {
   }
     if (p === '/api/register' && req.method === 'POST') {
     let client;
+          const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+      || req.socket.remoteAddress
+      || 'unknown';
+
+    if (!checkRegisterLimit(ip)) {
+      return json(res, 429, {
+        error: 'Too many registration attempts. Please try again in an hour.'
+      });
+    }
     try {
       const b = await body(req);
       const name = safeText(b.name, 60);
