@@ -47,7 +47,7 @@ function modal(html){let old=$('.modal');if(old)old.remove();let e=document.crea
 async function deleteAccount(){if(!confirm('Permanently delete your account and workout history?'))return;await api('/delete-account',{method:'POST'});state.user=null;auth();}async function logout(){await api('/logout',{method:'POST'});state.user=null;auth();}
 function go(p){state.page=p;render()}function render(){
 if(!state.user)return auth();
-let content=({home,setup,library,calendar,progress,shop,profile,player})[state.page]||home;
+let content=({home,setup,library,calendar,progress,shop,profile,player,prestart})[state.page]||home;
 shell(content());
 if(state.page==='player'){
 let exercise=state.workout[state.step];
