@@ -1,5 +1,5 @@
 
-const CACHE = 'asta-v3';
+const CACHE = 'asta-v4';
 
 const FILES = [
   '/',
