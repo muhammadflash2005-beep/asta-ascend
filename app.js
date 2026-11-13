@@ -1,3 +1,6 @@
+let countdownInterval = null;
+let workoutTimerInterval = null;
+let workoutStartedAt = null;
 const $=s=>document.querySelector(s), app=$('#app');let state={user:null,logs:[],schedule:{},favorites:[],page:'home',me:null,workout:[],step:0,filter:'All',search:'',selectedDay:null};
 const groups={Forearms:['Wrist Curl','Reverse Wrist Curl','Fist Squeeze','Finger Extension','Palm Pulse','Knuckle Push-up'],Back:['Superman Hold','Reverse Snow Angel','Prone Y Raise','Cobra Lift','Bird Dog','Swimmers'],Core:['Crunch','Reverse Crunch','Plank','Dead Bug','Bicycle Crunch','Mountain Climber'],Legs:['Bodyweight Squat','Reverse Lunge','Glute Bridge','Calf Raise','Wall Sit','Squat Pulse'],Chest:['Push-up','Knee Push-up','Wide Push-up','Incline Push-up','Diamond Push-up','Pike Push-up'],FullBody:['Burpee','Jumping Jack','Bear Crawl','Inchworm','High Knees','Squat Thrust']};
 const muscles={Forearms:'Forearm flexors and extensors',Back:'Back and spinal stabilizers',Core:'Abdominals and deep core',Legs:'Quadriceps, glutes and calves',Chest:'Pectorals, triceps and shoulders',FullBody:'Full-body conditioning'};
