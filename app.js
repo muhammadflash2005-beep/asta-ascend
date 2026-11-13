@@ -143,3 +143,17 @@ function beginWorkoutCountdown(){
     }
   },1000);
 }
+function startWorkoutClock(){
+  clearInterval(workoutTimerInterval);
+
+  workoutTimerInterval=setInterval(()=>{
+    if(!workoutStartedAt)return;
+
+    const elapsed=Math.floor((Date.now()-workoutStartedAt)/1000);
+    const minutes=String(Math.floor(elapsed/60)).padStart(2,'0');
+    const seconds=String(elapsed%60).padStart(2,'0');
+
+    const timer=document.getElementById('timer');
+    if(timer)timer.textContent=`${minutes}:${seconds}`;
+  },250);
+}
