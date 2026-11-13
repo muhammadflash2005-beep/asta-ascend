@@ -105,3 +105,11 @@ function speakWorkout(value){
   speech.pitch=1;
   window.speechSynthesis.speak(speech);
 }
+function countdown(){
+  return `<section class="panel" style="text-align:center;padding:45px 20px">
+    <div class="eyebrow">[ SYSTEM INITIALIZING ]</div>
+    <h1 class="h1">GET READY!</h1>
+    <div id="countdownNumber" style="font-size:100px;font-weight:900;color:#e84b68">5</div>
+    <p class="muted">YOUR QUEST BEGINS SOON</p>
+  </section>`;
+}
