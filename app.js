@@ -113,3 +113,33 @@ function countdown(){
     <p class="muted">YOUR QUEST BEGINS SOON</p>
   </section>`;
 }
+function beginWorkoutCountdown(){
+  clearInterval(countdownInterval);
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+
+  let count=5;
+  state.page='countdown';
+  render();
+  speakWorkout(count);
+
+  countdownInterval=setInterval(()=>{
+    count--;
+
+    const display=document.getElementById('countdownNumber');
+
+    if(count>0){
+      if(display)display.textContent=count;
+      speakWorkout(count);
+    }else{
+      clearInterval(countdownInterval);
+      if(display)display.textContent='GO!';
+      speakWorkout('Start!');
+      setTimeout(()=>{
+        workoutStartedAt=Date.now();
+        state.page='player';
+        render();
+        startWorkoutClock();
+      },700);
+    }
+  },1000);
+}
