@@ -97,7 +97,8 @@ function mount(el,exercise){
 }
 window.ASTAWorkout3D={mount,unmount,exerciseNames:names.slice()};
 })();
-0.25, 0);
+window.ASTAWorkout3D={mount,unmount,exerciseNames:names.slice()};
+})();
           set("shoulderL", -0.3, 0.4, -0.12);
           set("shoulderR", -0.3, 0.4, 0.12);
           set("elbowL", -0.55, 0.75 + cycle * 0.2, -0.12);
