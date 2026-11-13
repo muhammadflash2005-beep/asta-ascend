@@ -5,7 +5,7 @@ const $=s=>document.querySelector(s), app=$('#app');let state={user:null,logs:[]
 const groups={Forearms:['Wrist Curl','Reverse Wrist Curl','Fist Squeeze','Finger Extension','Palm Pulse','Knuckle Push-up'],Back:['Superman Hold','Reverse Snow Angel','Prone Y Raise','Cobra Lift','Bird Dog','Swimmers'],Core:['Crunch','Reverse Crunch','Plank','Dead Bug','Bicycle Crunch','Mountain Climber'],Legs:['Bodyweight Squat','Reverse Lunge','Glute Bridge','Calf Raise','Wall Sit','Squat Pulse'],Chest:['Push-up','Knee Push-up','Wide Push-up','Incline Push-up','Diamond Push-up','Pike Push-up'],FullBody:['Burpee','Jumping Jack','Bear Crawl','Inchworm','High Knees','Squat Thrust']};
 const muscles={Forearms:'Forearm flexors and extensors',Back:'Back and spinal stabilizers',Core:'Abdominals and deep core',Legs:'Quadriceps, glutes and calves',Chest:'Pectorals, triceps and shoulders',FullBody:'Full-body conditioning'};
 const cues=['Keep your movement controlled.','Brace your core and breathe steadily.','Keep your joints aligned.','Stop if you feel sharp pain.','Use a comfortable range of motion.','Avoid rushing the lowering phase.'];
-const db={};Object.entries(groups).forEach(([g,names])=>names.forEach((name,i)=>{let easy=['Knee Push-up','Incline Push-up','Bird Dog','Glute Bridge','Wall Sit','Dead Bug'].includes(name);db[name]={id:name.toLowerCase().replaceAll(' ','-'),name,group:g,muscle:muscles[g],difficulty:i<2?'Beginner':i<4?'Intermediate':'Advanced',sets:3,reps:g==='Core'||name.includes('Hold')||name==='Wall Sit'?'30 sec':String(8+i*2),rest:45+i*5,steps:[`Start in a stable, comfortable position for ${name.toLowerCase()}.`,`Engage the target muscles and move slowly through the exercise.`,`Pause briefly at the strongest point without holding your breath.`,`Return with control and repeat for the prescribed reps.`],breathing:'Exhale during the effort; inhale as you return.',mistakes:['Rushing the movement','Holding your breath','Allowing the lower back to arch','Using momentum instead of muscle control'],easier:easy?'Reduce the range of motion and slow down.':`Try a smaller range or fewer repetitions of ${name}.`,harder:`Increase reps gradually or use a slower 3-second lowering phase.`,safety:'Train on a stable, non-slip surface. Stop if you feel sharp pain, dizziness or unusual shortness of breath.'};}));
+const db={};Object. entries(groups).forEach(([g,names])=>names.forEach((name,i)=>{let easy=['Knee Push-up','Incline Push-up','Bird Dog','Glute Bridge','Wall Sit','Dead Bug'].includes(name);db[name]={id:name.toLowerCase().replaceAll(' ','-'),name,group:g,muscle:muscles[g],difficulty:i<2?'Beginner':i<4?'Intermediate':'Advanced',sets:3,reps:g==='Core'||name.includes('Hold')||name==='Wall Sit'?'30 sec':String(8+i*2),rest:45+i*5,steps:[`Start in a stable, comfortable position for ${name.toLowerCase()}.`,`Engage the target muscles and move slowly through the exercise.`,`Pause briefly at the strongest point without holding your breath.`,`Return with control and repeat for the prescribed reps.`],breathing:'Exhale during the effort; inhale as you return.',mistakes:['Rushing the movement','Holding your breath','Allowing the lower back to arch','Using momentum instead of muscle control'],easier:easy?'Reduce the range of motion and slow down.':`Try a smaller range or fewer repetitions of ${name}.`,harder:`Increase reps gradually or use a slower 3-second lowering phase.`,safety:'Train on a stable, non-slip surface. Stop if you feel sharp pain, dizziness or unusual shortness of breath.'};}));
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function api(path,opts={}){let r=await fetch('/api'+path,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(opts.headers||{})},...opts});let d=await r.json();if(!r.ok)throw Error(d.error||'Request failed');return d;}
 function toast(s){let e=document.createElement('div');e.className='toast';e.textContent=s;document.body.append(e);setTimeout(()=>e.remove(),2600)}
@@ -21,7 +21,54 @@ function setup(){return `<section class="panel"><div class="eyebrow">[ PLAYER CO
 function toggleFocus(g,el){let f=state.user.focus.slice();if(g==='Full Body')f=f.includes(g)?[]:[g];else{f=f.filter(x=>x!=='Full Body');f=f.includes(g)?f.filter(x=>x!==g):[...f,g];}if(!f.length)f=['Full Body'];state.user.focus=f;$('#focuses').innerHTML=Object.keys(groups).map(x=>`<button class="chip ${f.includes(x)?'selected':''}" onclick="toggleFocus('${x}',this)">${x}</button>`).join('');}
 async function saveSetup(){state.user.levelChoice=$('#level').value;state.user.days=Number($('#days').value);await api('/profile',{method:'PATCH',body:JSON.stringify({focus:state.user.focus,levelChoice:state.user.levelChoice,days:state.user.days})});toast('[SYSTEM] Routine regenerated');go('home');}
 function library(){let all=Object.values(db).filter(x=>(state.filter==='All'||x.group===state.filter)&&(x.name.toLowerCase().includes(state.search.toLowerCase())||x.muscle.toLowerCase().includes(state.search.toLowerCase())));return `<div class="eyebrow">[ COMBAT DATABASE ]</div><h1 class="h1">EXERCISE LIBRARY</h1><div class="field"><input placeholder="Search exercises or muscles..." value="${esc(state.search)}" oninput="state.search=this.value;render()"></div><div class="tabs">${['All',...Object.keys(groups)].map(g=>`<button class="chip ${state.filter===g?'selected':''}" onclick="state.filter='${g}';render()">${g}</button>`).join('')}</div><section class="panel">${all.map(x=>`<div class="exercise"><div class="thumb">${svgFigure(x.name)}</div><div style="flex:1"><h3>${esc(x.name)}</h3><p>${x.group} · ${x.difficulty}</p><span class="tag">${x.sets} sets · ${x.reps}</span></div><button class="btn ghost" onclick="detail('${x.id}')">VIEW</button></div>`).join('')||'<p>No matching exercises.</p>'}</section>`;}
-function detail(id){let x=Object.values(db).find(e=>e.id===id);if(!x)return;modal(`<div class="eyebrow">EXERCISE DATA</div><h2>${x.name}</h2><p class="muted">${x.muscle} · ${x.difficulty}</p><div class="figure">${svgFigure(x.name)}</div><h3>Starting posture</h3><p>Set your body in a stable position, keep your spine neutral and brace your core.</p><h3>Step-by-step form</h3><ol>${x.steps.map(s=>`<li>${s}</li>`).join('')}</ol><h3>Breathing</h3><p>${x.breathing}</p><h3>Common mistakes</h3><ul>${x.mistakes.map(s=>`<li>${s}</li>`).join('')}</ul><div class="figure">${svgFigure(x.name,true)}</div><h3>Easier variation</h3><p>${x.easier}</p><h3>Harder variation</h3><p>${x.harder}</p><p class="notice">Safety: ${x.safety}</p><p class="small">Suggested: ${x.sets} sets · ${x.reps} · ${x.rest}s rest</p><button class="btn secondary" onclick="favorite('${x.id}')">${state.favorites.includes(x.id)?'★ Remove favorite':'☆ Add favorite'}</button>`);}
+function detail(id) {
+  let x = Object.values(db).find(e => e.id === id);
+  if (!x) return;
+
+  modal(`
+    <div class="eyebrow">EXERCISE DATA</div>
+    <h2>${esc(x.name)}</h2>
+    <p class="muted">${esc(x.muscle)} · ${esc(x.difficulty)}</p>
+
+    <div class="exercise-demo-heading">
+      <span class="eyebrow">3D EXERCISE DEMONSTRATION</span>
+      <span class="small">Movement guide</span>
+    </div>
+
+    <div class="figure exercise-demo" id="exercise3d"></div>
+
+    <h3>Starting posture</h3>
+    <p>Set your body in a stable position, maintain good alignment and brace your core.</p>
+
+    <h3>Step-by-step form</h3>
+    <ol>${x.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+
+    <h3>Breathing</h3>
+    <p>${esc(x.breathing)}</p>
+
+    <h3>Common mistakes</h3>
+    <ul>${x.mistakes.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+
+    <h3>Easier variation</h3>
+    <p>${esc(x.easier)}</p>
+
+    <h3>Harder variation</h3>
+    <p>${esc(x.harder)}</p>
+
+    <p class="notice">Safety: ${esc(x.safety)}</p>
+    <p class="small">Suggested: ${x.sets} sets · ${esc(x.reps)} · ${x.rest}s rest</p>
+
+    <button class="btn secondary" onclick="favorite('${x.id}')">
+      ${state.favorites.includes(x.id) ? '★ Remove favorite' : '☆ Add favorite'}
+    </button>
+  `);
+
+  const host = document.getElementById('exercise3d');
+
+  if (host && window.ASTAWorkout3D) {
+    window.ASTAWorkout3D.mount(host, x.name);
+  }
+}
 async function favorite(id){let d=await api('/favorites',{method:'POST',body:JSON.stringify({exerciseId:id})});state.favorites=d.favorites;toast('Favorites updated');}
 function startWorkout(){
   state.workout=makeRoutine();
@@ -61,7 +108,33 @@ function profile(){return `<div class="eyebrow">[ PLAYER SETTINGS ]</div><h1 cla
 async function setReminder(){let t=$('#remindtime').value;if(!t)return;if(!('Notification'in window))return toast('Notifications are not supported by this browser.');let perm=await Notification.requestPermission();if(perm!=='granted')return toast('Notification permission not granted.');await api('/profile',{method:'PATCH',body:JSON.stringify({reminders:{time:t}})});state.me.reminders={time:t};toast('Reminder saved');scheduleReminder(t);}
 function scheduleReminder(t){let [h,m]=t.split(':').map(Number),now=new Date(),at=new Date();at.setHours(h,m,0,0);if(at<=now)at.setDate(at.getDate()+1);setTimeout(()=>{new Notification('[SYSTEM] Daily Quest',{body:`${state.user.name}, your daily quest is waiting.`});scheduleReminder(t)},at-now);}
 function legal(n){modal(`<div class="eyebrow">ASTA ASCEND</div><h2>${n}</h2><p>ASTA Ascend stores account details and workout logs to provide saved progress. Passwords are stored as salted password hashes. Payment card details are handled by Paystack and are not stored by ASTA Ascend.</p><p>Workout information is educational and is not medical advice. Train within your ability and stop if you experience pain or dizziness.</p><p>You may delete your account and associated app data from Account settings. Contact the app operator for privacy or data requests.</p><p>Use the app responsibly. Virtual coins have no cash value and are not redeemable for money.</p>`);}
-function modal(html){let old=$('.modal');if(old)old.remove();let e=document.createElement('div');e.className='modal';e.innerHTML=`<div class="modalbox"><button class="btn ghost" style="float:right" onclick="closeModal()">✕</button>${html}</div>`;document.body.append(e);}function closeModal(){$('.modal')?.remove();}
+function modal(html) {
+  closeModal();
+
+  let e = document.createElement('div');
+  e.className = 'modal';
+
+  e.innerHTML = `
+    <div class="modalbox">
+      <button class="btn ghost"
+        style="float:right"
+        onclick="closeModal()">✕</button>
+      ${html}
+    </div>
+  `;
+
+  document.body.append(e);
+}
+
+function closeModal() {
+  const host = document.getElementById('exercise3d');
+
+  if (host && window.ASTAWorkout3D) {
+    window.ASTAWorkout3D.unmount(host);
+  }
+
+  document.querySelector('.modal')?.remove();
+}
 async function deleteAccount(){if(!confirm('Permanently delete your account and workout history?'))return;await api('/delete-account',{method:'POST'});state.user=null;auth();}async function logout(){await api('/logout',{method:'POST'});state.user=null;auth();}
 function go(p){state.page=p;render()}function render(){
 if(!state.user)return auth();
